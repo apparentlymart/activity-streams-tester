@@ -13,7 +13,9 @@ if "QUERY_STRING" in environ:
 
 print "Content-type: text/html\n\n";
 
-print "<html><head><title>Activity Streams Tester</title></head><link rel='stylesheet' type='text/css' href='/static/style.css' /><body>"
+print "<html><head><title>Activity Streams Tester</title></head>"
+print "<link rel='stylesheet' type='text/css' href='/static/style.css' />"
+print "<body>"
 print "<form action='/' method='GET'>"
 print "<p><label>Feed URL: <input type='url' name='url' value=\""+escape(feed_url)+"\" size='100'></label><input type='submit'></p>"
 print "</form>"
@@ -44,15 +46,15 @@ def render_activities():
             warnings["object_no_object_types"] = True
 
         print "<table>"
-        if object.name: print "<tr><th>Name</th><td>"+escape(object.name)+"</td></tr>"
-        if object.id: print "<tr><th>Id</th><td>"+escape(object.id)+"</td></tr>"
-        if object.url: print "<tr><th>URL</th><td><a href=\""+escape(object.url)+"\">"+escape(object.url)+"</a></td></tr>"
+        if object.name: print "<tr><th>Name</th><td>"+escape(object.name.encode("UTF-8"))+"</td></tr>"
+        if object.id: print "<tr><th>Id</th><td>"+escape(object.id.encode("UTF-8"))+"</td></tr>"
+        if object.url: print "<tr><th>URL</th><td><a href=\""+escape(object.url.encode("UTF-8"))+"\">"+escape(object.url.encode("UTF-8"))+"</a></td></tr>"
         print "<tr><th>Object Types</th><td>"
         if len(object.object_types):
             print "<ul class='typeurilist'>"
             for type in object.object_types:
                 print "<li>"
-                print escape(type)
+                print escape(type.encode("UTF-8"))
                 print "</li>"
             print "</ul>"
         else:
@@ -62,7 +64,7 @@ def render_activities():
 
     if activities:
         print "<div id='activities'>"
-        print "<p>Activities in the feed <strong>"+escape(feed_url)+"</strong>:</p><ul class='activitylist'>"
+        print "<p>Activities in the feed <strong>"+escape(feed_url.encode("UTF-8"))+"</strong>:</p><ul class='activitylist'>"
         for activity in activities:
 
             if not activity.actor:
@@ -83,7 +85,7 @@ def render_activities():
             print "<dt>Verbs</dt><dd><ul class='typeurilist'>"
             for verb in activity.verbs:
                 print "<li>"
-                print escape(verb)
+                print escape(verb.encode("UTF-8"))
                 print "</li>"
             print "</ul></dd>"
             print "<dt>Object</dt><dd>"
