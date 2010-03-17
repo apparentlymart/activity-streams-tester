@@ -13,7 +13,7 @@ if "QUERY_STRING" in environ:
 
 print "Content-type: text/html\n\n";
 
-print "<html><head><title>Activity Streams Tester</title></head><body>"
+print "<html><head><title>Activity Streams Tester</title></head><link rel='stylesheet' type='text/css' href='/static/style.css' /><body>"
 print "<form action='/' method='GET'>"
 print "<p><label>Feed URL: <input type='url' name='url' value=\""+escape(feed_url)+"\" size='100'></label><input type='submit'></p>"
 print "</form>"
@@ -118,6 +118,7 @@ if len(warnings):
     if "object_no_object_types" in warnings:
         print "<li>The target, object or actor of at least one of the activities does not have any explicit object types. Consumers can handle an object better if it's annotated with an appropriate object type using the <tt>activity:object-type</tt> element.</li>"
     print "</ul>"
+    print "<p>Please note that this tool is not a validator and so fixing the above items does not necessarily mean that your feed is valid or useful.</p>"
     print "</div>"
 
 print "</body></html>"
