@@ -4,6 +4,7 @@ from cgi import parse_qs, escape
 import urllib2
 from xml.etree import ElementTree
 from activitystreams.atom import make_activities_from_feed
+from google.appengine.api.urlfetch import DownloadError
 
 feed_url = ""
 if "QUERY_STRING" in environ:
@@ -27,6 +28,9 @@ try:
         f = urllib2.urlopen(feed_url)
         et = ElementTree.parse(f)
         activities = make_activities_from_feed(et)
+
+except DownloadError:
+    print "<p>There was an error retrieving the feed. This may be due to an incorrect URL, or it might be due to the server hosting the feed taking too long to respond.</p>"
 
 except Exception, ex:
     print "<p>"+escape(ex.message)+"</p>"
