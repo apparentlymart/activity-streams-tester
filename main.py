@@ -14,6 +14,7 @@ if "QUERY_STRING" in environ:
 print "Content-type: text/html\n\n";
 
 print "<html><head><title>Activity Streams Tester</title></head>"
+print "<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />"
 print "<link rel='stylesheet' type='text/css' href='/static/style.css' />"
 print "<body>"
 print "<form action='/' method='GET'>"
