@@ -53,7 +53,9 @@ def render_activities():
         print "<table>"
         if object.name: print "<tr><th>Name</th><td>"+escape(object.name.encode("UTF-8"))+"</td></tr>"
         if object.id: print "<tr><th>Id</th><td>"+escape(object.id.encode("UTF-8"))+"</td></tr>"
+        if object.summary: print "<tr><th>Summary</th><td>"+escape(object.summary.encode("UTF-8"))+"</td></tr>"
         if object.url: print "<tr><th>URL</th><td><a href=\""+escape(object.url.encode("UTF-8"))+"\">"+escape(object.url.encode("UTF-8"))+"</a></td></tr>"
+        if object.image_url: print "<tr><th>Image URL</th><td><img src='"+escape(object.image_url.encode("UTF-8"))+"' width='75' align='absmiddle' /> <a href=\""+escape(object.image_url.encode("UTF-8"))+"\">"+escape(object.image_url.encode("UTF-8"))+"</a></td></tr>"
         print "<tr><th>Object Types</th><td>"
         if len(object.object_types):
             print "<ul class='typeurilist'>"
@@ -83,6 +85,10 @@ def render_activities():
             if activity.time:
                 print "<dt>Time</dt><dd>"
                 print activity.time
+                print "</dd>"
+            if activity.icon_url:
+                print "<dt>Icon URL</dt><dd>"
+                print "<img src='"+escape(activity.icon_url)+"' width='16' height='16'> "+escape(activity.icon_url)
                 print "</dd>"
             print "<dt>Actor</dt><dd>"
             print_object(activity.actor)
