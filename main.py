@@ -47,26 +47,19 @@ def render_activities():
             warnings["object_no_id"] = True
         if not object.url:
             warnings["object_no_url"] = True
-        if not len(object.object_types):
-            warnings["object_no_object_types"] = True
+        if not object.object_type:
+            warnings["object_no_object_type"] = True
 
         print "<table>"
         if object.name: print "<tr><th>Name</th><td>"+escape(object.name.encode("UTF-8"))+"</td></tr>"
         if object.id: print "<tr><th>Id</th><td>"+escape(object.id.encode("UTF-8"))+"</td></tr>"
         if object.summary: print "<tr><th>Summary</th><td>"+escape(object.summary.encode("UTF-8"))+"</td></tr>"
         if object.url: print "<tr><th>URL</th><td><a href=\""+escape(object.url.encode("UTF-8"))+"\">"+escape(object.url.encode("UTF-8"))+"</a></td></tr>"
-        if object.image_url: print "<tr><th>Image URL</th><td><img src='"+escape(object.image_url.encode("UTF-8"))+"' width='75' align='absmiddle' /> <a href=\""+escape(object.image_url.encode("UTF-8"))+"\">"+escape(object.image_url.encode("UTF-8"))+"</a></td></tr>"
-        print "<tr><th>Object Types</th><td>"
-        if len(object.object_types):
-            print "<ul class='typeurilist'>"
-            for type in object.object_types:
-                print "<li>"
-                print escape(type.encode("UTF-8"))
-                print "</li>"
-            print "</ul>"
+        if object.image: print "<tr><th>Image URL</th><td><img src='"+escape(object.image.url.encode("UTF-8"))+"' width='75' align='absmiddle' /> <a href=\""+escape(object.image.url.encode("UTF-8"))+"\">"+escape(object.image.url.encode("UTF-8"))+"</a></td></tr>"
+        if object.object_type:
+            print "<tr><th>Object Type</th><td>"+escape(object.object_type.encode("UTF-8"))+"</td></tr>"
         else:
-            print "(none)"
-        print "</td></tr>"
+            print "<tr><th>Object Type</th><td>(none)</td></tr>"
         print "</table>"
 
     if activities:
@@ -93,12 +86,12 @@ def render_activities():
             print "<dt>Actor</dt><dd>"
             print_object(activity.actor)
             print "</dd>"
-            print "<dt>Verbs</dt><dd><ul class='typeurilist'>"
-            for verb in activity.verbs:
-                print "<li>"
-                print escape(verb.encode("UTF-8"))
-                print "</li>"
-            print "</ul></dd>"
+            print "<dt>Verb</dt><dd>"
+            if activity.verb:
+                print escape(activity.verb.encode("UTF-8"))
+            else:
+                print "(none)"
+            print "</dd>"
             print "<dt>Object</dt><dd>"
             print_object(activity.object)
             print "</dd>"
