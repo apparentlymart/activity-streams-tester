@@ -2,8 +2,11 @@
 from os import environ
 from cgi import parse_qs, escape
 import urllib2
+import json
+import re
 from xml.etree import ElementTree
 from activitystreams.atom import make_activities_from_feed
+from activitystreams.json import make_activities_from_stream_dict
 from google.appengine.api.urlfetch import DownloadError
 
 feed_url = ""
@@ -22,20 +25,31 @@ print "<form action='/' method='GET'>"
 print "<p><label>Feed URL: <input type='url' name='url' value=\""+escape(feed_url)+"\" size='100'></label><input type='submit'></p>"
 print "</form>"
 
+warnings = {}
+
+parse_mode = None
+
 activities = None
 try:
     if feed_url:
         f = urllib2.urlopen(feed_url)
-        et = ElementTree.parse(f)
-        activities = make_activities_from_feed(et)
+
+        content_type = f.info().getheader("Content-Type", None)
+
+        if re.match("\s*application/json", content_type):
+            parse_mode = "JSON activity stream"
+            stream_dict = json.load(f)
+            activities = make_activities_from_stream_dict(stream_dict)
+        else:
+            parse_mode = "Atom activity stream"
+            et = ElementTree.parse(f)
+            activities = make_activities_from_feed(et)
 
 except DownloadError:
     print "<p>There was an error retrieving the feed. This may be due to an incorrect URL, or it might be due to the server hosting the feed taking too long to respond.</p>"
 
-except Exception, ex:
-    print "<p>"+escape(ex.message)+"</p>"
-
-warnings = {}
+#except Exception, ex:
+#    print "<p>"+escape(ex.message)+"</p>"
 
 def render_activities():
 
@@ -64,7 +78,7 @@ def render_activities():
 
     if activities:
         print "<div id='activities'>"
-        print "<p>Activities in the feed <strong>"+escape(feed_url.encode("UTF-8"))+"</strong>:</p><ul class='activitylist'>"
+        print "<p>Activities in the "+parse_mode+" <strong>"+escape(feed_url.encode("UTF-8"))+"</strong>:</p><ul class='activitylist'>"
         for activity in activities:
 
             if not activity.actor:
@@ -112,17 +126,17 @@ if len(warnings):
     print "<p>This tool detected a few things about this feed that you may wish to fix for optimal handling by activity streams processing software:</p>"
     print "<ul>"
     if "activity_no_actor" in warnings:
-        print "<li>At least one of the activities has no actor. To correct this, add a feed-level <tt>atom:author</tt> element or separate entry-level <tt>atom:author</tt> elements for each entry.</li>"
+        print "<li>At least one of the activities has no actor.</li>"
     if "activity_no_object" in warnings:
-        print "<li>At least one of the activities has no object. This should actually be impossible, so it indicates a bug in this parser rather than in your feed. Whoops!</li>"
+        print "<li>At least one of the activities has no object.</li>"
     if "activity_no_time" in warnings:
-        print "<li>At least one of the activities has time associated with it. This may cause sorting or other parsing problems in consumer software. To correct this, add an entry-level <tt>atom:published</tt> element for each entry.</li>"
+        print "<li>At least one of the activities has time associated with it. This may cause sorting or other parsing problems in consumer software.</li>"
     if "object_no_id" in warnings:
-        print "<li>The target, object or actor of at least one of the activities does not have an id. This may cause de-duping issues in consumer software. To correct this, add an <tt>atom:id</tt> element to the element that represents each object.</li>"
+        print "<li>The target, object or actor of at least one of the activities does not have an id. This may cause de-duping issues in consumer software.</li>"
     if "object_no_url" in warnings:
         print "<li>The target, object or actor of at least one of the activities does not have a URL associated with it. A permalink URL makes an object more useful.</li>"
-    if "object_no_object_types" in warnings:
-        print "<li>The target, object or actor of at least one of the activities does not have any explicit object types. Consumers can handle an object better if it's annotated with an appropriate object type using the <tt>activity:object-type</tt> element.</li>"
+    if "object_no_object_type" in warnings:
+        print "<li>The target, object or actor of at least one of the activities does not have an explicit object type. Consumers can handle an object better if it's annotated with an appropriate object type.</li>"
     print "</ul>"
     print "<p>Please note that this tool is not a validator and so fixing the above items does not necessarily mean that your feed is valid or useful.</p>"
     print "</div>"
