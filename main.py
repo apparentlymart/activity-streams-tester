@@ -2,12 +2,12 @@
 from os import environ
 from cgi import parse_qs, escape
 import urllib2
-import json
 import re
 from xml.etree import ElementTree
 from activitystreams.atom import make_activities_from_feed
 from activitystreams.json import make_activities_from_stream_dict
 from google.appengine.api.urlfetch import DownloadError
+from django.utils import simplejson as json
 
 feed_url = ""
 if "QUERY_STRING" in environ:
